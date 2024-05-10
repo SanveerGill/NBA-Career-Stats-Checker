@@ -1,11 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Autocomplete from 'react-autocomplete';
+import Combobox from 'react-widgets/Combobox';
 import './App.css';
 
 function App() {
-  const [responseData, setResponseData] = useState(null);
+  const [playerStats, setPlayerStats] = useState(null);
+  const [playerNamesList, setPlayerNamesList] = useState([]);
   const [error, setError] = useState(null);
   const [playerName, setPlayerName] = useState('');
+  const [filteredPlayerNames, setFilteredPlayerNames] = useState([]);
+
+const getPlayers = () => {
+    axios.get('http://localhost:5000/api/playerNames')
+      .then((response) => {
+        // Set the response data in the state
+        const playerNames = [];
+        response.data.results.forEach(player => {
+            playerNames.push(player.player_name);
+        });
+        setPlayerNamesList(playerNames);
+      })
+      .catch((error) => {
+        // Set the error in the state if an error occurs
+        setError(error);
+      });
+}
+
+useEffect(() => {
+  getPlayers();
+}, []);
+
+useEffect(() => {
+  console.log(playerNamesList);
+}, [playerNamesList]);
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -21,7 +49,7 @@ function App() {
         }
         else{setError(null)};
         // Set the response data in the state
-        setResponseData(response.data.results);
+        setPlayerStats(response.data.results);
         
       })
       .catch((error) => {
@@ -35,16 +63,16 @@ function App() {
       <header className="App-header">
       <h1>NBA Player Stats</h1>
 
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            onChange={(event) => setPlayerName(event.target.value)}
+      <form onSubmit={handleSubmit}>
+          <Combobox
             value={playerName}
-            placeholder="Enter text..."
+            onChange={setPlayerName}
+            data={playerNamesList}
+            placeholder="Enter player name"
           />
-          <button type="submit">Send Text</button>
+          <button type="submit">Go</button>
         </form>
-        {responseData && !error && (
+        {playerStats && !error && (
         <div>
         <h1>{playerName}</h1>
 
@@ -84,7 +112,7 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {responseData.map((player) => (
+            {playerStats.map((player) => (
               <tr key={player.id}>
                 <td>{player.season}</td>
                 <td>{player.team}</td>
