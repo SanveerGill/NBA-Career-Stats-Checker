@@ -1,9 +1,11 @@
 const axios = require('axios');
-async function getbballUpdates(req, res) {
+async function getPlayerStats(req, res) {
+  const { playerName } = req.body;
+  console.log(req);
   var config = {
     method: 'get',
   maxBodyLength: Infinity,
-    url: 'https://nba-stats-db.herokuapp.com/api/playerdata/name/Nikola Jokić',
+    url: `https://nba-stats-db.herokuapp.com/api/playerdata/name/${playerName}`,
     headers: { }
   };
   
@@ -16,4 +18,4 @@ async function getbballUpdates(req, res) {
     console.log(error);
   });
 }
-module.exports = getbballUpdates;
+module.exports = getPlayerStats;
