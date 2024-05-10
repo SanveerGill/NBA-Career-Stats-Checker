@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Autocomplete from 'react-autocomplete';
 import Combobox from 'react-widgets/Combobox';
 import './App.css';
 
 function App() {
   const [playerStats, setPlayerStats] = useState(null);
-  const [playerNamesList, setPlayerNamesList] = useState([]);
+  const [playerNamesList, setPlayerNamesList] = useState(null); // Initialize as null
   const [error, setError] = useState(null);
   const [playerName, setPlayerName] = useState('');
-  const [filteredPlayerNames, setFilteredPlayerNames] = useState([]);
 
-const getPlayers = () => {
+  const getPlayers = () => {
     axios.get('http://localhost:5000/api/playerNames')
       .then((response) => {
         // Set the response data in the state
         const playerNames = [];
-        response.data.results.forEach(player => {
-            playerNames.push(player.player_name);
+        response.data.forEach(player => {
+          playerNames.push(player.player_name);
         });
         setPlayerNamesList(playerNames);
       })
@@ -25,15 +23,15 @@ const getPlayers = () => {
         // Set the error in the state if an error occurs
         setError(error);
       });
-}
+  }
 
-useEffect(() => {
-  getPlayers();
-}, []);
+  useEffect(() => {
+    getPlayers();
+  }, []);
 
-useEffect(() => {
-  console.log(playerNamesList);
-}, [playerNamesList]);
+  useEffect(() => {
+    console.log(playerNamesList);
+  }, [playerNamesList]);
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -41,16 +39,15 @@ useEffect(() => {
   };
 
   const apiCall = (name) => {
-    console.log(name);
     axios.post('http://localhost:5000/api/playerStats', { playerName: name })
       .then((response) => {
         if (response.data.results.length === 0) {
           throw new Error('No data available for the specified player');
+        } else {
+          setError(null);
         }
-        else{setError(null)};
         // Set the response data in the state
         setPlayerStats(response.data.results);
-        
       })
       .catch((error) => {
         // Set the error in the state if an error occurs
@@ -61,22 +58,25 @@ useEffect(() => {
   return (
     <div className="App">
       <header className="App-header">
-      <h1>NBA Player Stats</h1>
+        <h1>NBA Player Stats</h1>
 
-      <form onSubmit={handleSubmit}>
-          <Combobox
-            value={playerName}
-            onChange={setPlayerName}
-            data={playerNamesList}
-            placeholder="Enter player name"
-          />
-          <button type="submit">Go</button>
-        </form>
+        {playerNamesList !== null && ( // Render only when playerNamesList is not null
+          <form onSubmit={handleSubmit}>
+            <Combobox
+              value={playerName}
+              onChange={setPlayerName}
+              data={playerNamesList}
+              placeholder="Enter player name"
+            />
+            <button type="submit">Go</button>
+          </form>
+        )}
+
         {playerStats && !error && (
-        <div>
-        <h1>{playerName}</h1>
+          <div>
+            <h1>{playerName}</h1>
 
-        <table className="stats-table">
+            <table className="stats-table">
           <thead>
             <tr>
               <th>Season</th>
@@ -148,9 +148,10 @@ useEffect(() => {
             ))}
           </tbody>
         </table>
-        </div>
-    )}
-     {error && (
+          </div>
+        )}
+
+        {error && (
           <div>
             <h2>Error:</h2>
             <p>{error.message}</p>
