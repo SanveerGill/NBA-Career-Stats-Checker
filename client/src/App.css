@@ -29,7 +29,24 @@
 }
 
 .stats-table{
-  font-size: 0.8rem; 
+  font-size: 1.0rem; 
+  border-collapse: collapse; /* This property ensures that borders collapse into a single border */
+  width: 80%; /* Set the width of the table */
+  margin: 0 auto;
+}
+.stats-table th,
+.stats-table td {
+  border: 2px solid #030303; /* Add a 1px solid border around each cell */
+  padding: 8px; /* Add padding inside each cell */
+  text-align: left; /* Align text to the left */
+}
+
+.stats-table th {
+  background-color: #013477; /* Add a background color to header cells */
+}
+
+.stats-table tr:nth-child(even) {
+  background-color: #013477; /* Alternate row background color */
 }
 
 @keyframes App-logo-spin {
