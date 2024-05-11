@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Spinner from 'react-bootstrap/Spinner';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   const [playerStats, setPlayerStats] = useState(null);
@@ -60,7 +63,9 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>NBA Player Career Stats</h1>
-
+        {playerNamesList == null && (
+          <Spinner animation="border" variant="primary" />
+        )}
         {playerNamesList !== null && ( // Render only when playerNamesList is not null
           <form onSubmit={handleSubmit} className="form-container">
           <input
@@ -78,7 +83,7 @@ function App() {
           <button type="submit" className="submit-button">Go</button>
         </form>
         )}
-
+        <br/>
         {playerStats && !error && (
           <div>
             <h1>{displayedPlayerName}</h1>
