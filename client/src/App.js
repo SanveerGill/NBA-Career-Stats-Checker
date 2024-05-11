@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Combobox from 'react-widgets/Combobox';
 import './App.css';
 
 function App() {
@@ -8,6 +7,7 @@ function App() {
   const [playerNamesList, setPlayerNamesList] = useState(null); // Initialize as null
   const [error, setError] = useState(null);
   const [playerName, setPlayerName] = useState('');
+  const [displayedPlayerName, setDisplayedPlayerName] = useState('');
 
   const getPlayers = () => {
     axios.get('http://localhost:5000/api/playerNames')
@@ -35,6 +35,7 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
+    setDisplayedPlayerName(playerName);
     apiCall(playerName);
   };
 
@@ -58,23 +59,29 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>NBA Player Stats</h1>
+        <h1>NBA Player Career Stats</h1>
 
         {playerNamesList !== null && ( // Render only when playerNamesList is not null
-          <form onSubmit={handleSubmit}>
-            <Combobox
-              value={playerName}
-              onChange={setPlayerName}
-              data={playerNamesList}
-              placeholder="Enter player name"
-            />
-            <button type="submit">Go</button>
-          </form>
+          <form onSubmit={handleSubmit} className="form-container">
+          <input
+            list="playerNames"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            placeholder="Enter player name"
+            className="input-field"
+          />
+          <datalist id="playerNames">
+            {playerNamesList.map((playerName) => (
+              <option key={playerName} value={playerName} />
+            ))}
+          </datalist>
+          <button type="submit" className="submit-button">Go</button>
+        </form>
         )}
 
         {playerStats && !error && (
           <div>
-            <h1>{playerName}</h1>
+            <h1>{displayedPlayerName}</h1>
 
             <table className="stats-table">
           <thead>
