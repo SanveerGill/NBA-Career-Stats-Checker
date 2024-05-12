@@ -1,7 +1,6 @@
 const axios = require('axios');
 async function getPlayerStats(req, res) {
   const { playerName } = req.body;
-  console.log(req);
   var config = {
     method: 'get',
   maxBodyLength: Infinity,
